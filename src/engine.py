@@ -11,7 +11,6 @@ class Inventory(dict):
 class Location():
     direction = ['n', 's', 'e', 'w', 'u', 'd','exit', 'look', 'inventory', 'search']
     
-    
     def _init_(self,name,desc):
         self.m_locations = {'Town Square':'the center of town','North Wall':'the north wall', 'South Wall':'the south wall'}
         
@@ -56,7 +55,7 @@ class GamePlay(Location,Inventory):
     game_map = {}
     
     def loadGame(self):
-        map_reader = csv.reader(open('resources/map.csv', 'rU'), delimiter=',', quotechar='|') 
+        map_reader = csv.reader(open('../resources/map.txt', 'rU'), delimiter='\t', quotechar='|') 
         j=0
         index_list = []
         desc_list = []
@@ -64,6 +63,7 @@ class GamePlay(Location,Inventory):
         for row in map_reader:
             if j == 25:
                 break
+            print (len(row))
             for i in range(len(row)):
                 index_list.append(25*j+i)
                 if row[i] == 'null':
@@ -73,6 +73,8 @@ class GamePlay(Location,Inventory):
                     desc_list.append(cell_list)
                 # print ('%d: %s' % (25*j+i,row[i]))
             j=j+1
+        print (len(index_list))
+        print (len(desc_list))
         game_map = dict(zip(index_list,desc_list))
         print (game_map)
         
@@ -83,19 +85,23 @@ class GamePlay(Location,Inventory):
             print (current_index)
             print (game_map[current_index])
             if (game_map[current_index]) != 'null':     
-                if (current_index - 25) >0 and (game_map[current_index - 25]) != 'null':
+                if (current_index - 25) >= 0 and (game_map[current_index - 25]) != 'null':
                     cell_nav.append('n')
-                if (current_index + 25) <625 and (game_map[current_index + 25]) != 'null':
+                if (current_index + 25) < 625 and (game_map[current_index + 25]) != 'null':
                     cell_nav.append('s')
-                if current_index <624:
-                    if (current_index % 25) != 0 and (game_map[current_index + 1]) != 'null':
+                if current_index < 624:
+                    if ((current_index % 24) != 0 or (current_index == 0)) and (game_map[current_index + 1]) != 'null':
                         cell_nav.append('e')
-                if (current_index - 1 % 25) >0 and (game_map[current_index - 1]) != 'null':
+                if ((current_index) % 24) >0 and (game_map[current_index - 1]) != 'null':
                     cell_nav.append('w')
                 
             current_nav.append(cell_nav)
             cell_nav = []
+            print (current_nav[current_index])
             
+        print (index_list)    
+        print (len(current_nav))
+        print (len(index_list))
         game_nav = dict(zip(index_list,current_nav))
         print (game_nav)
             
