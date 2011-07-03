@@ -13,7 +13,7 @@ class Location():
     
     def __init__(self,game_map):
         self.game_map = game_map
-        print (self.game_map)
+        #print (self.game_map)
         
     def add_exit(self,direction,location):
         self.exits[direction] = location
@@ -32,8 +32,7 @@ class Location():
             print "you can't go that way."
         
     def display_location(self,index):
-        print 'you find yourself at:'
-        print ((self.game_map[index])[0])
+        print 'You find yourself',((self.game_map[index])[0])
     
     def look_location(self,index):
         print ((self.game_map[index])[1])
@@ -64,7 +63,7 @@ class GamePlay():
         self.game_nav = {}
     
     def get_game_map(self):
-        print self.game_map
+        #print self.game_map
         return (self.game_map)
         
     def loadGame(self):
@@ -89,7 +88,7 @@ class GamePlay():
         #print (len(index_list))
         #print (len(desc_list))
         self.game_map = dict(zip(index_list,desc_list))
-        print (self.game_map)
+        #print (self.game_map)
         
         cell_nav = []
         current_nav = []
@@ -107,7 +106,9 @@ class GamePlay():
                         cell_nav.append('e')
                 if ((current_index) % 24) >0 and (self.game_map[current_index - 1]) != 'null':
                     cell_nav.append('w')
-                
+            
+            cell_nav.append('look')
+            cell_nav.append('help')
             current_nav.append(cell_nav)
             cell_nav = []
             #print (current_nav[current_index])
@@ -116,10 +117,17 @@ class GamePlay():
         #print (len(current_nav))
         #print (len(index_list))
         self.game_nav = dict(zip(index_list,current_nav))
-        print (self.game_nav)
+        #print (self.game_nav)
             
     def display_navigation(self,index):
-        print (self.game_nav[index])
+        print 'Your possible commands are:',(self.game_nav[index])
+        
+    def is_nav_valid(self,index,commandx):
+        try:
+            self.game_nav[index].index(commandx)
+            return True
+        except ValueError:
+            return False
     
     def play(self):
         self.help()
