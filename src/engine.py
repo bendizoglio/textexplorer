@@ -1,8 +1,8 @@
 import csv
 
 class Inventory(dict):
-    def __init__(self):
-        self.inventorylist = []
+    def __init__(self,inventorylist):
+        self.inventorylist = inventorylist
     def add_item(self,item):
         self.inventorylist.append(item)
     def remove_item(self,item):
@@ -40,7 +40,7 @@ class Location():
 class Player:
     def __init__(self, location):
         self.location = location
-        self.inventory = Inventory()
+        self.inventory = Inventory(['copper sword',])
         
         
     def add_to_inventory(self, new_inventory):
@@ -61,6 +61,7 @@ class GamePlay():
     def __init__(self):
         self.game_map = {}
         self.game_nav = {}
+        self.inv_list = []
     
     def get_game_map(self):
         #print self.game_map
@@ -72,20 +73,26 @@ class GamePlay():
         index_list = []
         desc_list = []
         
-        for row in map_reader:
-            if j == 25:
-                break
+        
+        for row in map_reader:        
+            if j < 25:
             #print (len(row))
-            for i in range(len(row)):
-                index_list.append(25*j+i)
-                if row[i] == 'null':
-                    desc_list.append(row[i])
-                else:
-                    cell_list = row[i].split(";")
-                    desc_list.append(cell_list)
+                for i in range(len(row)):
+                    index_list.append(25*j+i)
+                    if row[i] == 'null':
+                        desc_list.append(row[i])
+                    else:
+                        cell_list = row[i].split(";")
+                        desc_list.append(cell_list)
                 # print ('%d: %s' % (25*j+i,row[i]))
+            if j >= 26:
+                for i in range(len(row)):
+                    if row[i] != 'null':
+                        l_list = row[i].split("\t")
+                        self.inv_list.append(l_list[0])
             j=j+1
-        #print (len(index_list))
+            
+        print (self.inv_list)
         #print (len(desc_list))
         self.game_map = dict(zip(index_list,desc_list))
         #print (self.game_map)
@@ -108,17 +115,46 @@ class GamePlay():
                     cell_nav.append('w')
             
             cell_nav.append('look')
+            cell_nav.append('search')
+            cell_nav.append('inventory')
             cell_nav.append('help')
             current_nav.append(cell_nav)
             cell_nav = []
-            #print (current_nav[current_index])
             
-        #print (index_list)    
-        #print (len(current_nav))
-        #print (len(index_list))
         self.game_nav = dict(zip(index_list,current_nav))
-        #print (self.game_nav)
+        cell_inv = []
+        current_inv = []
+        for current_index,v in self.game_map.items():
+            if len(self.game_map[current_index]) > 2 and self.game_map[current_index] != 'null':     
+                cell_inv = self.game_map[current_index]
+                
+            current_inv.append(cell_inv[2::])
+            cell_inv = []
+           
+        self.game_inv = dict(zip(index_list,current_inv))
+        
+    def display_cell_inv(self,index):
+        if len(self.game_inv[index]) >0:
+            display_list = []
+            print (self.game_inv[index][0])
+            for i in range(len(self.game_inv[index])):
+                print (self.game_inv[index][i])
+                display_list.append(self.inv_list[int(self.game_inv[index][i])])
+            print 'This area contains:', display_list
+            print 'What would you like to pick up? <none>'
             
+            while True:
+                commandx = raw_input('\n>')
+                try:
+                    print commandx
+                    print self.game_inv[index]
+                    i = self.inv_list.index(commandx)
+                    self.game_inv[index].remove(self.inv_list[i])
+                except ValueError:
+                    i = -1
+                if i == -1:
+                    break
+                
     def display_navigation(self,index):
         print 'Your possible commands are:',(self.game_nav[index])
         
@@ -128,11 +164,4 @@ class GamePlay():
             return True
         except ValueError:
             return False
-    
-    def play(self):
-        self.help()
-        self.player.look_location()
-    
-    
-    
 

@@ -7,7 +7,7 @@ from engine import GamePlay
 
    
 m_player = Player(541)
-g_inventory = Inventory()
+#g_inventory = Inventory()
 game_play = GamePlay()
 
 game_play.loadGame()
@@ -42,7 +42,12 @@ while True:
             e = EAST
             w = WEST
             look = look around
-            search = search for items in the vicinity\n\n''')
+            search = search for items in the vicinity
+            inventory = \n\n''')
+        elif commandx == 'search':
+            game_play.display_cell_inv(m_player.get_location())
+        elif commandx == 'inventory':
+            m_player.display_inventory()
 
         
 
